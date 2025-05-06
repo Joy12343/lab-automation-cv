@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HeinSight Processing</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px;
+      color: #333;
+    }
+
+    h1 {
+      color: #2c3e50;
+    }
+
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      margin: 20px 0;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    #processed-image {
+      max-width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>HeinSight Frame Detection</h1>
+  <button id="sendFrameBtn">Send Frame to Model</button>
+  <img id="processed-image" />
+
+  <script>
+    const btn = document.getElementById('sendFrameBtn');
+    const img = document.getElementById('processed-image');
+
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      btn.innerText = 'Processing...';
+
+      try {
+        const response = await fetch('/process_frame', {
+          method: 'POST'
+        });
+
+        const result = await response.json();
+
+        if (result.processed_image) {
+          img.src = result.processed_image;
+          img.style.display = 'block';
+        } else {
+          alert('No image returned from model.');
+        }
+      } catch (err) {
+        console.error('Error:', err);
+        alert('Failed to process frame.');
+      }
+
+      btn.disabled = false;
+      btn.innerText = 'Send Frame to Model';
+    });
+  </script>
+</body>
+</html>

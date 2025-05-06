@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeinSight Video Processor</title>
+    <style>
+        #videoStream {
+            width: 800px;
+            border: 2px solid #444;
+        }
+        #videoCanvas, #processed-image {
+            display: block;
+            margin-top: 20px;
+            border: 2px solid #333;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>HeinSight Video Stream + Processing</h1>
+
+    <!-- Live video stream from Flask -->
+    <img id="videoStream" src="{{ url_for('video_feed') }}" crossorigin="anonymous" />
+
+    <button onclick="captureFrame()">Capture Frame</button>
+
+    <!-- Canvas to capture a frame from the video -->
+    <canvas id="videoCanvas" width="640" height="480"></canvas>
+
+    <!-- Processed image returned from backend -->
+    <h2>Processed Frame</h2>
+    <img id="processed-image" width="640" />
+
+    <script>
+        function captureFrame() {
+            const video = document.getElementById('videoStream');
+            const canvas = document.getElementById('videoCanvas');
+            const ctx = canvas.getContext('2d');
+
+            // Set canvas dimensions to match video
+            canvas.width = 640;
+            canvas.height = 480;
+
+            // Clear canvas and draw current frame
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Convert canvas to base64 image
+            const imageData = canvas.toDataURL('image/jpeg');
+
+            // Send image to backend via FormData
+            const formData = new FormData();
+            formData.append("image", imageData);
+
+            fetch("/process_frame", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.image) {
+                    const processedImage = data.image;
+                    document.getElementById("processed-image").src = processedImage;
+                } else {
+                    console.error("Error from server:", data.error);
+                }
+            })
+            .catch(error => {
+                console.error("Error sending image to backend:", error);
+            });
+        }
+    </script>
+</body>
+</html>

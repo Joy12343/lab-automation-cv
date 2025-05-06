@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Video Feed</title>
+    <style>
+        #videoStream {
+            width: 800px; /* Scaled display only */
+        }
+        #videoCanvas {
+            display: block;
+            margin-top: 20px;
+            border: 2px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Live Video Stream</h1>
+    <img id="videoStream" src="{{ url_for('video_feed') }}" width="800" crossorigin="anonymous">
+
+    <br><br>
+    <button onclick="captureFrame()">Capture Frame</button>
+
+    <canvas id="videoCanvas" width="640" height="480"></canvas>
+
+    <script>
+        function captureFrame() {
+            const video = document.getElementById('videoStream');
+            const canvas = document.getElementById('videoCanvas');
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = 640;
+            canvas.height = 480;
+
+            // Draw the current frame to the canvas
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Get base64 image
+            const imageData = canvas.toDataURL('image/jpeg');
+
+            // Show canvas if it was hidden
+            canvas.style.display = 'block';
+
+            // Send to backend
+            fetch('/process_frame', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ image: imageData })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Server response:', data);
+
+                // Optional: draw results on canvas
+                if (data.box) {
+                    const { x, y, width, height } = data.box;
+                    ctx.strokeStyle = 'red';
+                    ctx.lineWidth = 3;
+                    ctx.strokeRect(x, y, width, height);
+                }
+
+                if (data.label) {
+                    ctx.font = '20px Arial';
+                    ctx.fillStyle = 'red';
+                    ctx.fillText(data.label, 10, 30);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>
