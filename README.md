@@ -18,3 +18,8 @@ Install dependencies inside the container:
 ```
 pip install flask opencv-python
 ```
+
+### 3. Run the App
+```
+python3 app.py
+```
