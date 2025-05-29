@@ -1,3 +1,7 @@
+'''
+Initial implementation of deck detection. Didn't work because it only identifies edges but not the deck itself.
+'''
+
 import cv2
 
 cap = cv2.VideoCapture("http://10.63.5.42:5000/video_feed2")  # 0 is usually the default webcam
@@ -71,7 +75,7 @@ while True:
     if ret:
         new_frame = camera_preprocess(frame)
         frame_cropped = crop_frame(frame)
-    
+
         # Edge detection
         edges = cv2.Canny(new_frame, 50, 150)
 
@@ -88,7 +92,7 @@ while True:
             ep = 0.005 * cv2.arcLength(cnt, True)
             approx = cv2.approxPolyDP(cnt, ep, True)
             area = cv2.contourArea(approx)
-            
+
             if 25 <= len(approx) <= 45 and 60 < area < 100:
                 cv2.drawContours(frame_cropped, [approx], -1, (0, 255, 0), 3)
 

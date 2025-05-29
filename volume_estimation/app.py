@@ -7,13 +7,12 @@ from heinsight_app import HeinSight
 
 app = Flask(__name__)
 
-# Use your local lab camera stream URL
 video_source = "http://10.63.5.42:5000/video_feed2"
-heinsight = None  # Will be initialized in main
+heinsight = None
 
 @app.route('/')
 def index():
-    return render_template('index_5.html')  # New frontend
+    return render_template('index_5.html')  # Newest frontend
 
 @app.route('/process_frame', methods=['POST'])
 def process_frame():
