@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Video Feed</title>
+    <style>
+        #videoStream {
+            width: 800px; /* Scaled display only */
+        }
+        #videoCanvas {
+            display: block;
+            margin-top: 20px;
+            border: 2px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Live Video Stream</h1>
+    <img id="videoStream" src="{{ url_for('video_feed') }}" width="800" crossorigin="anonymous">
+
+    <br><br>
+    <button onclick="captureFrame()">Capture Frame</button>
+
+    <canvas id="videoCanvas" width="640" height="480"></canvas>
+
+    <script>
+        function captureFrame() {
+            const video = document.getElementById('videoStream');
+            const canvas = document.getElementById('videoCanvas');
+            const ctx = canvas.getContext('2d');
+
+            // Set canvas size
+            canvas.width = 640;
+            canvas.height = 480;
+
+            // Clear the canvas before redrawing
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clears the entire canvas
+
+            // Draw the current frame to the canvas
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Get base64 image from canvas
+            const imageData = canvas.toDataURL('image/jpeg');
+
+            // Show canvas if it was hidden
+            canvas.style.display = 'block';
+
+            // Create FormData and append the image data
+            const formData = new FormData();
+            formData.append("image", imageData);
+
+            // Send the base64-encoded image to the backend
+            fetch("/process_frame", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.image) {
+                    // Processed image returned from the backend
+                    const processedImage = data.image;
+
+                    // Redraw or update the image tag with the processed image
+                    const imgElement = document.getElementById("processed-image");
+                    imgElement.src = processedImage;
+                } else {
+                    console.error("Error processing the image", data.error);
+                }
+            })
+            .catch(error => {
+                console.error("Error sending frame to backend:", error);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../train/images
+test: ../test/images
+
+nc: 1
+names: ['Deck']
+
+roboflow:
+  workspace: deck-detection
+  project: deck-detection-vwrwv
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/deck-detection/deck-detection-vwrwv/dataset/1
