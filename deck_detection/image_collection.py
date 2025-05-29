@@ -1,3 +1,6 @@
+'''
+Script used to collect the training dataset.
+'''
 import requests
 import cv2
 import numpy as np
@@ -5,7 +8,7 @@ import os
 import time
 
 # ---- CONFIGURE THIS ----
-url = "http://10.63.5.42:5000/video_feed2"  # <-- Your stream URL
+url = "http://10.63.5.42:5000/video_feed2"
 output_dir = "images"
 start_count = 60
 total_images_to_collect = 120
@@ -31,7 +34,7 @@ def main():
         if a != -1 and b != -1:
             jpg = bytes_buffer[a:b+2]  # Extract full JPG
             bytes_buffer = bytes_buffer[b+2:]  # Cut processed part
-           
+
             frame = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_COLOR)
 
             if frame is not None:
