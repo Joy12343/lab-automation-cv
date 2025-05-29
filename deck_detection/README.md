@@ -3,6 +3,11 @@ This module detects lab decks using a YOLOv8n-based object detection model. It w
 
 This folder contains all files related to the training and deployment of the deck detection model.
 
+## Folder Structure
+- images/: unlabeled deck detection dataset collected through image_collection.py
+- datasets/: labeled deck detection dataset but it's in wrong format
+- datasets2/: labeled deck detection dataset and was refactored into the right format for YOLOv8n model fine-tuning.
+  
 ## Deployment Instruction
 ### 1. Pull the Jetson-Compatible Ultralytics
 This includes the necessary YOLOv8 dependencies optimized for JetPack 4 (used on Jetson Nano and similar devices).
