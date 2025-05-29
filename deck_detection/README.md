@@ -36,3 +36,8 @@ sudo docker run -it \
 ```
 python3 detect.py
 ```
+
+## Training the Model
+```
+yolo task=segment mode=train model=yolov8n-seg.pt data=/datasets2/data.yaml epochs=50 imgsz=640 batch=2 device=0
+```
